@@ -41,8 +41,9 @@ public class PersonsController {
     }
 
     @GetMapping("/myprofile")
-    public String self(Model model, Authentication authentication) {
+    public String self(Model model, Authentication authentication, HttpSession httpSession) {
         User user = (User) authentication.getPrincipal();
+        model.addAttribute("CSRF_TOKEN", httpSession.getAttribute("CSRF_TOKEN"));
         model.addAttribute("person", personRepository.get("" + user.getId()));
         return "person";
     }
