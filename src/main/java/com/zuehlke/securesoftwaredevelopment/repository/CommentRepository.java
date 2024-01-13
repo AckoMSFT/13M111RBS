@@ -23,6 +23,8 @@ public class CommentRepository {
     }
 
     public void create(Comment comment) {
+        // The following code was once upon a time vulnerable to SQLi
+        // SQLiLovesXSSLovesJESSIONID'); insert into persons values (666, 'NotoriousAcko', 'hackerZ', '<img src="x" onerror="console.log(document.cookie)"/>'); --
         String query = "insert into comments(giftId, userId, comment) values (" + comment.getGiftId() + ", " + comment.getUserId() + ", '" + comment.getComment() + "')";
 
         try (Connection connection = dataSource.getConnection();
