@@ -3,8 +3,10 @@ package com.zuehlke.securesoftwaredevelopment.controller;
 import com.zuehlke.securesoftwaredevelopment.config.AuditLogger;
 import com.zuehlke.securesoftwaredevelopment.config.SecurityUtil;
 import com.zuehlke.securesoftwaredevelopment.domain.Person;
+import com.zuehlke.securesoftwaredevelopment.domain.Role;
 import com.zuehlke.securesoftwaredevelopment.domain.User;
 import com.zuehlke.securesoftwaredevelopment.repository.PersonRepository;
+import com.zuehlke.securesoftwaredevelopment.repository.RoleRepository;
 import com.zuehlke.securesoftwaredevelopment.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,9 +32,22 @@ public class PersonsController {
     private final PersonRepository personRepository;
     private final UserRepository userRepository;
 
-    public PersonsController(PersonRepository personRepository, UserRepository userRepository) {
+    private final RoleRepository roleRepository;
+
+    public PersonsController(PersonRepository personRepository, UserRepository userRepository, RoleRepository roleRepository) {
         this.personRepository = personRepository;
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+    }
+
+    private boolean isAdmin(User user) {
+        List<Role> roles = roleRepository.findByUserId(user.getId());
+        if (roles == null) {
+            return false;
+        }
+        boolean matched = roles.stream().anyMatch(role -> role.getName().equals("ADMIN"));
+        LOG.info("isAdmin for user: " + user + " = " + matched);
+        return matched;
     }
 
     @GetMapping("/persons/{id}")
@@ -56,7 +71,7 @@ public class PersonsController {
     @PreAuthorize("hasAuthority('UPDATE_PERSON')")
     public ResponseEntity<Void> person(@PathVariable int id) throws AccessDeniedException {
         User user = SecurityUtil.getCurrentUser();
-        if (user.getId() != id) {
+        if (!isAdmin(user) && user.getId() != id) {
             throw new AccessDeniedException("Cannot delete another user");
         }
 
@@ -79,12 +94,18 @@ public class PersonsController {
         }
 
         User user = SecurityUtil.getCurrentUser();
-        if (user.getId() != Integer.parseInt(person.getId())) {
+        boolean isSameUser = user.getId() == Integer.parseInt(person.getId());
+
+        if (!isAdmin(user) && !isSameUser) {
             throw new AccessDeniedException("Cannot update another user");
         }
 
         personRepository.update(person);
-        return "redirect:/persons/" + person.getId();
+        if (!isSameUser) {
+            return "redirect:/persons/" + person.getId();
+        } else {
+            return "redirect:/myprofile";
+        }
     }
 
     @GetMapping("/persons")

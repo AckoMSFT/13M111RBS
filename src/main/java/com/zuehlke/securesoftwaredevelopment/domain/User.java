@@ -64,7 +64,7 @@ public class User implements UserDetails {
         return "User{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
+                ", password='" + "<CENSORED>" + '\'' +
                 ", authorities=" + authorities +
                 '}';
     }

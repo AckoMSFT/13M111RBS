@@ -1,6 +1,7 @@
 package com.zuehlke.securesoftwaredevelopment.config;
 
 import com.zuehlke.securesoftwaredevelopment.domain.User;
+import com.zuehlke.securesoftwaredevelopment.repository.RoleRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
