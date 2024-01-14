@@ -49,7 +49,7 @@ public class UserRepository {
             return rs.next();
         } catch (SQLException e) {
             // e.printStackTrace();
-            String errorMessage = "Failed to check credentials for username: " + username + "and password: " + password;
+            String errorMessage = "Failed to check credentials for username: " + username + "and password: <CENSORED>";
             LOG.error(errorMessage, e);
         }
         return false;

@@ -49,7 +49,7 @@ public class HashedUserRepository {
             statement.executeUpdate();
         } catch (SQLException e) {
             // e.printStackTrace();
-            String errorMessage = "Failed to associate totpKey: " + totpKey + " with username: " + username;
+            String errorMessage = "Failed to associate totpKey: <CENSORED> with username: " + username;
             LOG.error(errorMessage, e);
         }
     }
