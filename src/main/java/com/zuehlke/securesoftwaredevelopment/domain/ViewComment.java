@@ -24,4 +24,12 @@ public class ViewComment {
     public void setComment(String comment) {
         this.comment = comment;
     }
+
+    @Override
+    public String toString() {
+        return "ViewComment{" +
+                "personName='" + personName + '\'' +
+                ", comment='" + comment + '\'' +
+                '}';
+    }
 }

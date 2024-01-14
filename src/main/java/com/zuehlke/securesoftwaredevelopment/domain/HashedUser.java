@@ -38,4 +38,14 @@ public class HashedUser {
     public void setTotpKey(String totpKey) {
         this.totpKey = totpKey;
     }
+
+    @Override
+    public String toString() {
+        return "HashedUser{" +
+                "username='" + username + '\'' +
+                ", passwordHash='" + passwordHash + '\'' +
+                ", salt='" + salt + '\'' +
+                ", totpKey='" + totpKey + '\'' +
+                '}';
+    }
 }

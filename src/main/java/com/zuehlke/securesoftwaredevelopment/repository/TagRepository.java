@@ -32,7 +32,9 @@ public class TagRepository {
                 tagList.add(new Tag(rs.getInt(1), rs.getString(2)));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
+            String errorMessage = "Failed to fetch tags.";
+            LOG.error(errorMessage, e);
         }
         return tagList;
     }

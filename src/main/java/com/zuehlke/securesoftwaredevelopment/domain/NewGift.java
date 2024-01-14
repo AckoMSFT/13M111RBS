@@ -50,4 +50,14 @@ public class NewGift {
     public void setTags(List<Integer> tags) {
         this.tags = tags;
     }
+
+    @Override
+    public String toString() {
+        return "NewGift{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", price=" + price +
+                ", tags=" + tags +
+                '}';
+    }
 }

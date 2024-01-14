@@ -31,6 +31,7 @@ public class PermissionService {
             List<Permission> rolePermissions = permissionRepository.findByRoleId(role.getId());
             userPermissions.addAll(rolePermissions);
         }
+        LOG.info("User '{}' has permissions '{}'", userId, userPermissions);
         return userPermissions;
     }
 }

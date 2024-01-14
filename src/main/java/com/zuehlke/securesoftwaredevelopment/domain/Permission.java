@@ -16,4 +16,12 @@ public class Permission {
     public String getName() {
         return name;
     }
+    
+    @Override
+    public String toString() {
+        return "Permission{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

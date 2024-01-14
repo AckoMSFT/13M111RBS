@@ -34,7 +34,9 @@ public class UserRepository {
                 return new User(id, username1, password);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
+            String errorMessage = "Failed to fetch user with username: " + username;
+            LOG.error(errorMessage, e);
         }
         return null;
     }
@@ -46,7 +48,9 @@ public class UserRepository {
              ResultSet rs = statement.executeQuery(query)) {
             return rs.next();
         } catch (SQLException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
+            String errorMessage = "Failed to check credentials for username: " + username + "and password: " + password;
+            LOG.error(errorMessage, e);
         }
         return false;
     }
@@ -58,7 +62,9 @@ public class UserRepository {
         ) {
             statement.executeUpdate(query);
         } catch (SQLException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
+            String errorMessage = "Failed to delete user with id: " + userId;
+            LOG.error(errorMessage, e);
         }
     }
 }

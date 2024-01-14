@@ -44,7 +44,9 @@ public class CommentRepository {
             preparedStatement.setString(3, comment.getComment());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
+            String errorMessage = "Failed to insert comment: " + comment;
+            LOG.error(errorMessage, e);
         }
     }
 
@@ -58,7 +60,9 @@ public class CommentRepository {
                 commentList.add(new Comment(rs.getInt(1), rs.getInt(2), rs.getString(3)));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
+            String errorMessage = "Failed to fetch comments for gift: " + giftId;
+            LOG.error(errorMessage, e);
         }
         return commentList;
     }

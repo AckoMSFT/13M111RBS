@@ -34,7 +34,9 @@ public class PersonRepository {
                 personList.add(createPersonFromResultSet(rs));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
+            String errorMessage = "Failed to fetch persons.";
+            LOG.error(errorMessage, e);
         }
         return personList;
     }
@@ -62,7 +64,9 @@ public class PersonRepository {
                 return createPersonFromResultSet(rs);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
+            String errorMessage = "Failed to fetch person with id: " + personId;
+            LOG.error(errorMessage, e);
         }
 
         return null;
@@ -75,7 +79,9 @@ public class PersonRepository {
         ) {
             statement.executeUpdate(query);
         } catch (SQLException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
+            String errorMessage = "Failed to delete person with id: " + personId;
+            LOG.error(errorMessage, e);
         }
     }
 
@@ -100,7 +106,9 @@ public class PersonRepository {
             statement.setString(2, email);
             statement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
+            String errorMessage = "Failed to update person: " + personUpdate;
+            LOG.error(errorMessage, e);
         }
     }
 }

@@ -32,7 +32,9 @@ public class HashedUserRepository {
                 return new HashedUser(username, passwordHash, salt, totpKey);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
+            String errorMessage = "Failed to fetch user with username: " + username;
+            LOG.error(errorMessage, e);
         }
         return null;
     }
@@ -46,7 +48,9 @@ public class HashedUserRepository {
 
             statement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
+            String errorMessage = "Failed to associate totpKey: " + totpKey + " with username: " + username;
+            LOG.error(errorMessage, e);
         }
     }
 }

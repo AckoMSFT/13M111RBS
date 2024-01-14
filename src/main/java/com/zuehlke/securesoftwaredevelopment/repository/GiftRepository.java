@@ -37,7 +37,9 @@ public class GiftRepository {
                 giftList.add(gift);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
+            String errorMessage = "Failed to fetch gifts.";
+            LOG.error(errorMessage, e);
         }
         return giftList;
     }
@@ -83,7 +85,9 @@ public class GiftRepository {
                 return gift;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
+            String errorMessage = "Failed to fetch gift with id: " + giftId + " and tags: " + tagList;
+            LOG.error(errorMessage, e);
         }
 
         return null;
@@ -111,12 +115,16 @@ public class GiftRepository {
                         statement2.setInt(2, tag.getId());
                         statement2.executeUpdate();
                     } catch (SQLException e) {
-                        e.printStackTrace();
+                        // e.printStackTrace();
+                        String errorMessage = "Failed to insert gift_to_tag mapping for gift: " + finalId + " and tag: " + tag;
+                        LOG.error(errorMessage, e);
                     }
                 });
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
+            String errorMessage = "Failed to create gift: " + gift + " with tags: " + tagsToInsert;
+            LOG.error(errorMessage, e);
         }
         return id;
     }
@@ -134,7 +142,9 @@ public class GiftRepository {
             statement.executeUpdate(query3);
             statement.executeUpdate(query4);
         } catch (SQLException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
+            String errorMessage = "Failed to delete gift: " + giftId;
+            LOG.error(errorMessage, e);
         }
     }
 
