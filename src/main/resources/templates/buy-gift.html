@@ -9,7 +9,7 @@
     <title>Buy Car</title>
 </head>
 <body>
-<div layout:fragment="content">
+<div layout:fragment="content" sec:authorize="hasAuthority('BUY_GIFT')">
     <h1>Buy gift</h1>
     <div class="row" th:unless="${bought == true}">
         <form class="col-5" method="POST" th:action="@{/buy-gift/__${id}__}">
