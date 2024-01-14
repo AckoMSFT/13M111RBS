@@ -20,8 +20,10 @@ public class CsrfHttpSessionListener implements HttpSessionListener {
         String token = createToken();
         se.getSession().setAttribute("CSRF_TOKEN", token);
         User user = SecurityUtil.getCurrentUser();
-        int userId = user.getId();
-        LOG.info("Generated CSRF_TOKEN {} for user {}", token, userId);
+        if (user != null) {
+            int userId = user.getId();
+            LOG.info("Generated CSRF_TOKEN {} for user {}", token, userId);
+        }
     }
 
     private static String createToken() {

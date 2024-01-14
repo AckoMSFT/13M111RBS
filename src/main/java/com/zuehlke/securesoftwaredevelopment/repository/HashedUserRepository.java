@@ -1,6 +1,10 @@
 package com.zuehlke.securesoftwaredevelopment.repository;
 
+import com.zuehlke.securesoftwaredevelopment.config.AuditLogger;
+import com.zuehlke.securesoftwaredevelopment.config.Entity;
+import com.zuehlke.securesoftwaredevelopment.config.SecurityUtil;
 import com.zuehlke.securesoftwaredevelopment.domain.HashedUser;
+import com.zuehlke.securesoftwaredevelopment.domain.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -45,6 +49,10 @@ public class HashedUserRepository {
              PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
             statement.setString(1, totpKey);
             statement.setString(2, username);
+
+            User user = SecurityUtil.getCurrentUser();
+            Entity entityTotpKey = new Entity("hashedusers.totpkey.insert", String.valueOf(user.getId()), "n/a", "(" + username + ", <CENSORED>)");
+            AuditLogger.getAuditLogger(HashedUserRepository.class).auditChange(entityTotpKey);
 
             statement.executeUpdate();
         } catch (SQLException e) {

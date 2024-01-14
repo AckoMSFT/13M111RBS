@@ -1,5 +1,6 @@
 package com.zuehlke.securesoftwaredevelopment.repository;
 
+import com.zuehlke.securesoftwaredevelopment.config.AuditLogger;
 import com.zuehlke.securesoftwaredevelopment.domain.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,8 @@ import java.sql.Statement;
 public class UserRepository {
 
     private static final Logger LOG = LoggerFactory.getLogger(UserRepository.class);
+
+    private static final AuditLogger AUDIT_LOGGER = AuditLogger.getAuditLogger(UserRepository.class);
 
     private DataSource dataSource;
 
@@ -46,12 +49,16 @@ public class UserRepository {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
              ResultSet rs = statement.executeQuery(query)) {
-            return rs.next();
+            if (rs.next()) {
+                AUDIT_LOGGER.audit("Login successful for username: " + username);
+                return true;
+            }
         } catch (SQLException e) {
             // e.printStackTrace();
             String errorMessage = "Failed to check credentials for username: " + username + "and password: <CENSORED>";
             LOG.error(errorMessage, e);
         }
+        AUDIT_LOGGER.audit("Login unsuccessful for username: " + username);
         return false;
     }
 

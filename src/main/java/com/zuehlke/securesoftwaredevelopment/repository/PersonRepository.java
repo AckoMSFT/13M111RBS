@@ -2,7 +2,9 @@ package com.zuehlke.securesoftwaredevelopment.repository;
 
 import com.zuehlke.securesoftwaredevelopment.config.AuditLogger;
 import com.zuehlke.securesoftwaredevelopment.config.Entity;
+import com.zuehlke.securesoftwaredevelopment.config.SecurityUtil;
 import com.zuehlke.securesoftwaredevelopment.domain.Person;
+import com.zuehlke.securesoftwaredevelopment.domain.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -77,6 +79,10 @@ public class PersonRepository {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
         ) {
+            User user = SecurityUtil.getCurrentUser();
+            Entity entity = new Entity("persons.delete", String.valueOf(user.getId()), String.valueOf(personId), "n/a");
+            AuditLogger.getAuditLogger(PersonRepository.class).auditChange(entity);
+
             statement.executeUpdate(query);
         } catch (SQLException e) {
             // e.printStackTrace();
@@ -104,6 +110,11 @@ public class PersonRepository {
             String email = personUpdate.getEmail() != null ? personUpdate.getEmail() : personFromDb.getEmail();
             statement.setString(1, firstName);
             statement.setString(2, email);
+
+            User user = SecurityUtil.getCurrentUser();
+            Entity entity = new Entity("persons.update", String.valueOf(user.getId()), personFromDb.toString(), personUpdate.toString());
+            AuditLogger.getAuditLogger(PersonRepository.class).auditChange(entity);
+
             statement.executeUpdate();
         } catch (SQLException e) {
             // e.printStackTrace();

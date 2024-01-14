@@ -1,7 +1,11 @@
 package com.zuehlke.securesoftwaredevelopment.repository;
 
+import com.zuehlke.securesoftwaredevelopment.config.AuditLogger;
+import com.zuehlke.securesoftwaredevelopment.config.Entity;
+import com.zuehlke.securesoftwaredevelopment.config.SecurityUtil;
 import com.zuehlke.securesoftwaredevelopment.domain.Comment;
 import com.zuehlke.securesoftwaredevelopment.domain.Rating;
+import com.zuehlke.securesoftwaredevelopment.domain.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -28,6 +32,8 @@ public class RatingRepository {
         String query2 = "update ratings SET rating = ? WHERE giftId = ? AND userId = ?";
         String query3 = "insert into ratings(giftId, userId, rating) values (?, ?, ?)";
 
+        User user = SecurityUtil.getCurrentUser();
+
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
              ResultSet rs = statement.executeQuery(query)
@@ -37,12 +43,24 @@ public class RatingRepository {
                 preparedStatement.setInt(1, rating.getRating());
                 preparedStatement.setInt(2, rating.getGiftId());
                 preparedStatement.setInt(3, rating.getUserId());
+
+                int giftId = rs.getInt(1);
+                int userId = rs.getInt(2);
+                int ratingValue = rs.getInt(3);
+                Rating ratingFromDb = new Rating(giftId, userId, ratingValue);
+                Entity entity = new Entity("rating.update", String.valueOf(user.getId()), ratingFromDb.toString(), rating.toString());
+                AuditLogger.getAuditLogger(RatingRepository.class).auditChange(entity);
+
                 preparedStatement.executeUpdate();
             } else {
                 PreparedStatement preparedStatement = connection.prepareStatement(query3);
                 preparedStatement.setInt(1, rating.getGiftId());
                 preparedStatement.setInt(2, rating.getUserId());
                 preparedStatement.setInt(3, rating.getRating());
+
+                Entity entity = new Entity("rating.insert", String.valueOf(user.getId()), "n/a", rating.toString());
+                AuditLogger.getAuditLogger(RatingRepository.class).auditChange(entity);
+
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException e) {

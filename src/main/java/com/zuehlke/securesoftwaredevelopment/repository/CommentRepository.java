@@ -1,5 +1,7 @@
 package com.zuehlke.securesoftwaredevelopment.repository;
 
+import com.zuehlke.securesoftwaredevelopment.config.AuditLogger;
+import com.zuehlke.securesoftwaredevelopment.config.Entity;
 import com.zuehlke.securesoftwaredevelopment.domain.Comment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +44,10 @@ public class CommentRepository {
             preparedStatement.setInt(1, comment.getGiftId());
             preparedStatement.setInt(2, comment.getUserId());
             preparedStatement.setString(3, comment.getComment());
+
+            Entity entity = new Entity("comment.insert", String.valueOf(comment.getUserId()), "n/a", comment.toString());
+            AuditLogger.getAuditLogger(CommentRepository.class).auditChange(entity);
+
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             // e.printStackTrace();

@@ -1,9 +1,12 @@
 package com.zuehlke.securesoftwaredevelopment.repository;
 
 import com.zuehlke.securesoftwaredevelopment.config.AuditLogger;
+import com.zuehlke.securesoftwaredevelopment.config.Entity;
+import com.zuehlke.securesoftwaredevelopment.config.SecurityUtil;
 import com.zuehlke.securesoftwaredevelopment.domain.Tag;
 import com.zuehlke.securesoftwaredevelopment.domain.Gift;
 import com.zuehlke.securesoftwaredevelopment.domain.NewGift;
+import com.zuehlke.securesoftwaredevelopment.domain.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -76,6 +79,8 @@ public class GiftRepository {
                         try {
                             return g.getId() == rs2.getInt(2);
                         } catch (SQLException e) {
+                            String errorMessage = "Failed to fetch tags for gift with id: " + giftId;
+                            LOG.error(errorMessage, e);
                             throw new RuntimeException(e);
                         }
                     }).findFirst().get();
@@ -102,6 +107,11 @@ public class GiftRepository {
             statement.setString(1, gift.getName());
             statement.setString(2, gift.getDescription());
             statement.setDouble(3, gift.getPrice());
+
+            User user = SecurityUtil.getCurrentUser();
+            Entity entity = new Entity("gift.insert", String.valueOf(user.getId()), "n/a", gift.toString());
+            AuditLogger.getAuditLogger(CommentRepository.class).auditChange(entity);
+
             statement.executeUpdate();
             ResultSet generatedKeys = statement.getGeneratedKeys();
             if (generatedKeys.next()) {
@@ -113,6 +123,10 @@ public class GiftRepository {
                     ) {
                         statement2.setInt(1, (int) finalId);
                         statement2.setInt(2, tag.getId());
+
+                        Entity entityTags = new Entity("gift.tag.insert", String.valueOf(user.getId()), "n/a", "(" + finalId + ", " + tag.getId() + ")");
+                        AuditLogger.getAuditLogger(CommentRepository.class).auditChange(entityTags);
+
                         statement2.executeUpdate();
                     } catch (SQLException e) {
                         // e.printStackTrace();
@@ -137,9 +151,25 @@ public class GiftRepository {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
         ) {
+            User user = SecurityUtil.getCurrentUser();
+            Entity entityGift = new Entity("gift.delete", String.valueOf(user.getId()), String.valueOf(giftId), "n/a");
+            AuditLogger.getAuditLogger(CommentRepository.class).auditChange(entityGift);
+
             statement.executeUpdate(query);
+
+            Entity entityRatings = new Entity("ratings.delete", String.valueOf(user.getId()), String.valueOf(giftId), "n/a");
+            AuditLogger.getAuditLogger(CommentRepository.class).auditChange(entityRatings);
+
             statement.executeUpdate(query2);
+
+            Entity entityComments = new Entity("comments.delete", String.valueOf(user.getId()), String.valueOf(giftId), "n/a");
+            AuditLogger.getAuditLogger(CommentRepository.class).auditChange(entityComments);
+
             statement.executeUpdate(query3);
+
+            Entity entityGiftTags = new Entity("gift.tags.delete", String.valueOf(user.getId()), String.valueOf(giftId), "n/a");
+            AuditLogger.getAuditLogger(CommentRepository.class).auditChange(entityGiftTags);
+
             statement.executeUpdate(query4);
         } catch (SQLException e) {
             // e.printStackTrace();
